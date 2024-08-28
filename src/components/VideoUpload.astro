@@ -1,0 +1,50 @@
+---
+
+---
+
+<div class="root">
+  <input
+    lang="en"
+    type="file"
+    id="video-upload"
+    class="file-input file-input-bordered file-input-secondary w-full max-w-xs"
+    accept="video/*"
+  />
+</div>
+
+<style>
+  .root {
+  }
+</style>
+
+<script>
+  import { md5 } from "../features/file-storage/file-hash";
+  import { getFileStore } from "../features/file-storage/file-store";
+  import { $currentBlobUrlId, $currentFileHash } from "../store/store";
+  import { required } from "../utils/nullability";
+  import { getObjectUrlId } from "../utils/object-url";
+
+  const input = required(
+    document.getElementById("video-upload"),
+    "Video upload input"
+  ) as HTMLInputElement;
+
+  input.addEventListener("change", async event => {
+    const file = (event.target as HTMLInputElement)?.files?.[0];
+    if (file) {
+      const hash = await md5(file);
+      const store = await getFileStore();
+
+      const hasFile = await store.hasFile(hash);
+      if (!hasFile) {
+        console.info("Saving new file", hash, file);
+        await store.saveFile(hash, file);
+      }
+
+      $currentFileHash.set(hash);
+
+      const blobUrl = URL.createObjectURL(file);
+      $currentBlobUrlId.set(getObjectUrlId(blobUrl));
+    }
+  });
+</script>

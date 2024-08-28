@@ -1,0 +1,35 @@
+---
+
+---
+
+<video class="video-preview" controls transition:persist></video>
+
+<style>
+  .video-preview {
+    display: none;
+    object-fit: initial;
+
+    max-height: 600px;
+    max-width: 1024px;
+  }
+</style>
+
+<script>
+  import { $currentBlobUrl } from "../store/store";
+  import { required } from "../utils/nullability";
+
+  const video = required(
+    document.getElementsByClassName("video-preview").item(0) as HTMLVideoElement,
+    "Video element"
+  );
+
+  $currentBlobUrl.subscribe(url => {
+    if (url) {
+      video.src = url;
+      video.style.display = "block";
+    } else {
+      video.src = "";
+      video.style.display = "none";
+    }
+  });
+</script>

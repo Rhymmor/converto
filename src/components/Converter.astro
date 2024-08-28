@@ -1,0 +1,57 @@
+---
+
+---
+
+<form>
+  <label class="input input-bordered flex items-center gap-2">
+    FFMPEG flags:
+    <input type="text" class="grow" />
+  </label>
+  <button id="convert" type="submit" class="btn btn-primary">
+    <span id="convert-spinner" class="loading loading-spinner" style="display: none;"></span>
+    Convert
+  </button>
+</form>
+
+<script>
+  import { transcode } from "../features/file-storage/ffmpeg/transcode";
+  import { getFileStore } from "../features/file-storage/file-store";
+  import { $resultBlobUrlId, $resultInProgress } from "../store/atoms/result-atoms";
+  import { $currentFileHash } from "../store/store";
+  import { required } from "../utils/nullability";
+  import { getObjectUrlId } from "../utils/object-url";
+
+  const btn = required(document.getElementById("convert"), "Convert button") as HTMLButtonElement;
+  const spinner = required(document.getElementById("convert-spinner"), "Convert spinner");
+
+  $resultInProgress.subscribe(inProgress => {
+    spinner.style.display = inProgress ? "inline-block" : "none";
+    btn.disabled = inProgress;
+  });
+
+  btn.addEventListener("click", async event => {
+    console.log("click");
+    event.preventDefault();
+
+    const hash = $currentFileHash.value;
+
+    if (!hash) {
+      console.error("No file selected");
+      return;
+    }
+
+    const store = await getFileStore();
+    const file = await store.loadFile(hash);
+
+    if (!file) {
+      console.error("File not found", { hash });
+      return;
+    }
+
+    console.log("file", file);
+
+    const resultFile = await transcode(file);
+    const resultUrl = URL.createObjectURL(resultFile);
+    $resultBlobUrlId.set(getObjectUrlId(resultUrl));
+  });
+</script>

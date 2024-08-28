@@ -1,0 +1,30 @@
+---
+import Converter from "../components/Converter.astro";
+import VideoCard from "../components/VideoCard.astro";
+import VideoPreview from "../components/VideoPreview.astro";
+import VideoResult from "../components/VideoResult.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Welcome to Astro.">
+  <div class="content">
+    <div class="flex gap-2">
+      <VideoCard title="Original">
+        <VideoPreview />
+      </VideoCard>
+      <VideoCard title="Result"><VideoResult /></VideoCard>
+    </div>
+    <Converter />
+  </div>
+</Layout>
+
+<style>
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+</style>

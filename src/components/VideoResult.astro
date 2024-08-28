@@ -1,0 +1,35 @@
+---
+
+---
+
+<video id="video-result" class="video-preview" controls></video>
+
+<style>
+  .video-preview {
+    display: none;
+    object-fit: initial;
+
+    max-height: 600px;
+    max-width: 1024px;
+  }
+</style>
+
+<script>
+  import { $resultBlobUrl } from "../store/atoms/result-atoms";
+  import { required } from "../utils/nullability";
+
+  const video = required(
+    document.getElementById("video-result") as HTMLVideoElement,
+    "Video element"
+  );
+
+  $resultBlobUrl.subscribe(url => {
+    if (url) {
+      video.src = url;
+      video.style.display = "block";
+    } else {
+      video.src = "";
+      video.style.display = "none";
+    }
+  });
+</script>

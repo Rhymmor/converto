@@ -1,0 +1,57 @@
+---
+import VideoPreview from "../components/VideoPreview.astro";
+import VideoUpload from "../components/VideoUpload.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Welcome to Astro.">
+  <div class="content">
+    <VideoPreview />
+    <div class="btn-group">
+      <a href="/convert">
+        <button id="next" class="w-full btn btn-primary" style="display:none;"
+          >Continue &rarr;</button
+        >
+      </a>
+      <VideoUpload />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+</style>
+
+<script>
+  import { $currentBlobUrl } from "../store/store";
+
+  function changeNextState(objectId: string | null) {
+    const next = document.getElementById("next");
+    if (!next) {
+      return;
+    }
+
+    if (objectId) {
+      next.style.display = "block";
+    } else {
+      next.style.display = "none";
+    }
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    $currentBlobUrl.subscribe(changeNextState);
+  });
+</script>
